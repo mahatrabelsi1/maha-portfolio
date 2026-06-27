@@ -1,0 +1,712 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: #070813;
+    color: #dfe8ff;
+    font-family: Inter, system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: rgba(111, 255, 210, 0.32);
+    color: white;
+  }
+}
+
+@layer components {
+  .hero-field {
+    background:
+      linear-gradient(90deg, rgba(7, 8, 19, 0.08), rgba(7, 8, 19, 0.48) 48%, rgba(7, 8, 19, 0.9)),
+      linear-gradient(180deg, rgba(7, 8, 19, 0.05), rgba(7, 8, 19, 0.44)),
+      radial-gradient(circle at 22% 18%, rgba(111, 255, 210, 0.16), transparent 34%),
+      radial-gradient(circle at 78% 26%, rgba(255, 78, 205, 0.16), transparent 34%),
+      radial-gradient(circle at 55% 88%, rgba(255, 209, 102, 0.1), transparent 30%);
+  }
+
+  .hero-portrait {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 34% center;
+    opacity: 1;
+  }
+
+  .scanline {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, rgba(111, 255, 210, 0.08), transparent);
+    animation: scan 7s linear infinite;
+    opacity: 0.5;
+  }
+
+  .floating-puzzle {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #6fffd2;
+    backdrop-filter: blur(16px);
+  }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #6fffd2;
+  }
+
+  .hero-title {
+    margin-top: 1rem;
+    max-width: 900px;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+    font-size: clamp(3rem, 9vw, 7.8rem);
+    line-height: 0.92;
+    letter-spacing: 0;
+    color: white;
+    text-wrap: balance;
+    text-shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .hero-copy {
+    text-shadow: 0 14px 44px rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-status {
+    margin-top: 0.7rem;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.86rem;
+    color: #cbd5e1;
+  }
+
+  .section-title {
+    margin-top: 0.8rem;
+    max-width: 950px;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: 0;
+    color: white;
+    text-wrap: balance;
+  }
+
+  .section-band {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.04)),
+      #070813;
+  }
+
+  .nav-link {
+    transition: color 0.2s ease;
+  }
+
+  .nav-link:hover {
+    color: #6fffd2;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .danger-button,
+  .command-button,
+  .icon-action {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: 8px;
+    font-weight: 800;
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .primary-button {
+    border: 1px solid rgba(111, 255, 210, 0.5);
+    background: linear-gradient(135deg, rgba(111, 255, 210, 0.95), rgba(124, 92, 255, 0.95));
+    padding: 0.8rem 1.05rem;
+    color: #071018;
+  }
+
+  .secondary-button {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.8rem 1.05rem;
+    color: white;
+  }
+
+  .danger-button {
+    border: 1px solid rgba(255, 78, 205, 0.5);
+    background: rgba(255, 78, 205, 0.16);
+    padding: 0.8rem 1.05rem;
+    color: white;
+  }
+
+  .command-button {
+    border: 1px solid rgba(111, 255, 210, 0.35);
+    background: rgba(111, 255, 210, 0.15);
+    padding: 0.65rem 0.95rem;
+    color: white;
+  }
+
+  .icon-action {
+    width: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+
+  .primary-button:hover,
+  .secondary-button:hover,
+  .danger-button:hover,
+  .command-button:hover,
+  .icon-action:hover {
+    transform: translateY(-2px);
+  }
+
+  .brain-map {
+    position: relative;
+    min-height: 520px;
+    border-radius: 8px;
+  }
+
+  .brain-map::before {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border: 1px solid rgba(111, 255, 210, 0.18);
+    border-radius: 50%;
+    box-shadow: inset 0 0 70px rgba(124, 92, 255, 0.18);
+  }
+
+  .brain-core,
+  .brain-node {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+  }
+
+  .brain-core {
+    left: 50%;
+    top: 50%;
+    width: 178px;
+    height: 178px;
+    transform: translate(-50%, -50%);
+    color: white;
+    box-shadow: 0 0 70px rgba(111, 255, 210, 0.22);
+  }
+
+  .brain-core span {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #6fffd2;
+  }
+
+  .brain-core small {
+    color: #cbd5e1;
+  }
+
+  .brain-node {
+    width: 118px;
+    height: 92px;
+    color: #dfe8ff;
+  }
+
+  .node-1 {
+    left: 9%;
+    top: 15%;
+  }
+
+  .node-2 {
+    right: 7%;
+    top: 19%;
+  }
+
+  .node-3 {
+    left: 4%;
+    bottom: 18%;
+  }
+
+  .node-4 {
+    right: 13%;
+    bottom: 13%;
+  }
+
+  .node-5 {
+    left: 42%;
+    top: 4%;
+  }
+
+  .portal-button {
+    position: relative;
+    min-height: 260px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.055);
+    padding: 1.25rem;
+    color: white;
+    backdrop-filter: blur(18px);
+  }
+
+  .portal-button::before {
+    content: "";
+    position: absolute;
+    inset: auto -20% -45% -20%;
+    height: 130px;
+    background: radial-gradient(circle, rgba(111, 255, 210, 0.22), transparent 68%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .portal-button:hover::before,
+  .portal-button.is-active::before {
+    opacity: 1;
+  }
+
+  .portal-button.is-active {
+    border-color: rgba(111, 255, 210, 0.45);
+    box-shadow: 0 0 46px rgba(111, 255, 210, 0.16);
+  }
+
+  .portal-orb {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    margin-bottom: 1.1rem;
+    border-radius: 8px;
+    color: #070813;
+    box-shadow: 0 0 36px rgba(255, 255, 255, 0.18);
+  }
+
+  .puzzle-notch {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(111, 255, 210, 0.45);
+    background:
+      radial-gradient(circle at 50% 0, transparent 0 7px, rgba(111, 255, 210, 0.16) 8px),
+      rgba(255, 255, 255, 0.04);
+  }
+
+  .glass-panel,
+  .project-card,
+  .terminal-panel {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 1.35rem;
+    backdrop-filter: blur(18px);
+  }
+
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 310px;
+  }
+
+  .project-image {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .project-card::after {
+    content: "";
+    position: absolute;
+    inset: auto -12% -34% 30%;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 78, 205, 0.18), transparent 68%);
+  }
+
+  .hackathon-shell {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .hackathon-console,
+  .hackathon-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(124, 92, 255, 0.12), rgba(111, 255, 210, 0.04)),
+      rgba(255, 255, 255, 0.055);
+    padding: 1.25rem;
+    backdrop-filter: blur(18px);
+  }
+
+  .hackathon-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hackathon-card::before {
+    content: "RUN";
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    color: rgba(111, 255, 210, 0.08);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .hackathon-card h3 {
+    margin-top: 0.55rem;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: white;
+  }
+
+  .hackathon-badge {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 180px;
+    border: 1px solid rgba(111, 255, 210, 0.22);
+    border-radius: 8px;
+    background: rgba(111, 255, 210, 0.08);
+    padding: 0.85rem;
+    color: #dfe8ff;
+  }
+
+  .hackathon-badge span {
+    font-weight: 800;
+    color: #6fffd2;
+  }
+
+  .hackathon-badge small {
+    color: #cbd5e1;
+  }
+
+  .stat-tile {
+    min-height: 164px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.055);
+    padding: 1.25rem;
+  }
+
+  .stat-tile strong {
+    display: block;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    color: #6fffd2;
+  }
+
+  .stat-tile span {
+    display: block;
+    margin-top: 0.8rem;
+    color: #cbd5e1;
+  }
+
+  .chip,
+  .skill-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+    color: #dfe8ff;
+  }
+
+  .skill-pill {
+    border-color: rgba(111, 255, 210, 0.18);
+    color: #bafdeb;
+  }
+
+  .filter-button {
+    min-height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.055);
+    padding: 0.45rem 0.75rem;
+    color: #dfe8ff;
+    font-size: 0.88rem;
+    font-weight: 800;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .filter-button:hover {
+    transform: translateY(-2px);
+    border-color: rgba(111, 255, 210, 0.35);
+  }
+
+  .filter-button.is-active {
+    border-color: rgba(111, 255, 210, 0.55);
+    background: rgba(111, 255, 210, 0.15);
+    color: #6fffd2;
+  }
+
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: 1.2rem;
+    padding-left: 1.2rem;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0.28rem;
+    top: 0.8rem;
+    width: 1px;
+    background: linear-gradient(#6fffd2, rgba(255, 78, 205, 0.2));
+  }
+
+  .timeline-item {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.055);
+    padding: 1.25rem;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -1.34rem;
+    top: 1.5rem;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #6fffd2;
+    box-shadow: 0 0 18px rgba(111, 255, 210, 0.7);
+  }
+
+  .mini-card,
+  .language-row {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.055);
+    padding: 0.95rem;
+    color: #dbeafe;
+  }
+
+  .mission-card,
+  .impact-card,
+  .cert-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background:
+      linear-gradient(135deg, rgba(111, 255, 210, 0.07), rgba(255, 78, 205, 0.035)),
+      rgba(255, 255, 255, 0.045);
+    padding: 1rem;
+  }
+
+  .mission-card h4,
+  .impact-card h4,
+  .cert-card h4 {
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: white;
+  }
+
+  .mission-card p,
+  .impact-card p,
+  .cert-card p {
+    margin-top: 0.45rem;
+    color: #cbd5e1;
+    line-height: 1.7;
+  }
+
+  .impact-card {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .impact-card strong {
+    display: grid;
+    min-height: 70px;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(255, 209, 102, 0.14);
+    color: #ffd166;
+    font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+    font-size: 1.45rem;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .cert-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cert-layout {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cert-card-wide {
+    display: grid;
+    grid-column: span 2;
+    grid-template-columns: 1fr auto;
+    gap: 1.25rem;
+    align-items: end;
+  }
+
+  .cert-card-wide .mt-4 {
+    margin-top: 0;
+    justify-content: flex-end;
+    min-width: 220px;
+  }
+
+  .cert-card::after {
+    content: "";
+    position: absolute;
+    inset: -60px -80px auto auto;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(111, 255, 210, 0.14), transparent 70%);
+  }
+
+  .portal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.025);
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    color: #cbd5e1;
+  }
+
+  .portal-footer strong {
+    color: #6fffd2;
+  }
+
+  .language-row {
+    display: flex;
+    min-height: 96px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .language-row span {
+    color: #cbd5e1;
+    text-align: left;
+  }
+
+  .terminal-panel {
+    background:
+      linear-gradient(180deg, rgba(111, 255, 210, 0.08), transparent),
+      rgba(3, 7, 18, 0.8);
+  }
+
+  .terminal-input {
+    min-width: 0;
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.75rem 0.85rem;
+    color: white;
+    outline: none;
+  }
+
+  .terminal-input:focus {
+    border-color: rgba(111, 255, 210, 0.5);
+  }
+
+}
+
+@media (max-width: 760px) {
+  .cert-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cert-card-wide {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+  }
+
+  .cert-card-wide .mt-4 {
+    margin-top: 1rem;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  .brain-map {
+    min-height: 390px;
+  }
+
+  .brain-core {
+    width: 138px;
+    height: 138px;
+  }
+
+  .brain-node {
+    width: 92px;
+    height: 78px;
+    font-size: 0.78rem;
+  }
+
+  .node-5 {
+    left: 38%;
+  }
+
+  .portal-button {
+    min-height: 220px;
+  }
+
+  .language-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .language-row span {
+    text-align: left;
+  }
+}
