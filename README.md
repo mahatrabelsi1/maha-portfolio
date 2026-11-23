@@ -1,74 +1,21 @@
-# Mahaverse
+# Maha Trabelsi · Academic Portfolio
 
-An interactive personal portfolio for Maha Trabelsi, built as a playful mini operating system with four professional portals and a hidden chaos easter egg:
+One-page research portfolio, live at https://mahatrabelsi1.github.io/maha-portfolio/
 
-- Student Maha
-- Developer Maha
-- Scout & Volunteer Maha
-- Graphic Designer Maha
+Built with React, Vite and Tailwind CSS. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
 
-## Tech Stack
+## Editing content
 
-- React + Vite
-- Tailwind CSS
-- Framer Motion
-- Lucide React icons
-- Static data only, no backend and no database
+All text, links, publications, projects and dates live in `src/data/portfolio.js`.
 
-## Edit Personal Data
+- **CV:** replace `public/Maha_Trabelsi_CV_Rech.pdf` (or change `profile.cvPath`).
+- **Photo:** add an image under `public/images/profile/` and set `profile.photo`.
+- **Project images:** put them in `public/images/projects/` and reference them without a leading slash.
 
-Most content lives in:
-
-```text
-src/data/portfolio.js
-```
-
-Edit that file to update projects, hackathons, education, experience, leadership, certifications, languages, stats, and contact details.
-
-## Local Development
+## Development
 
 ```bash
 npm install
-npm run dev
+npm run dev      # local dev server
+npm run build    # production build into dist/
 ```
-
-## Build
-
-```bash
-npm run build
-```
-
-## GitHub Pages Deployment
-
-This repo is configured for a GitHub Pages project site named `maha-portfolio`.
-
-The Vite base path is set in `vite.config.js`:
-
-```js
-base: "/maha-portfolio/"
-```
-
-After pushing to GitHub, enable Pages:
-
-1. Open the repository settings.
-2. Go to `Pages`.
-3. Set source to `GitHub Actions`.
-4. Push to the `main` branch.
-
-The included workflow at `.github/workflows/deploy.yml` will build and publish the site.
-
-The final URL will be:
-
-```text
-https://YOUR-GITHUB-USERNAME.github.io/maha-portfolio/
-```
-
-## CV Download
-
-The download button points to:
-
-```text
-public/Maha_Trabelsi_CV_Rech.pdf
-```
-
-Replace that PDF when you want to update the downloadable CV.

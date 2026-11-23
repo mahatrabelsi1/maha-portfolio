@@ -1,603 +1,360 @@
-﻿import { useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+﻿import { useEffect, useState } from "react";
+import { Download, ExternalLink, Github, GraduationCap, Linkedin, Mail, Menu, Moon, Sun, X } from "lucide-react";
 import {
-  ArrowDown,
-  Download,
-  ExternalLink,
-  Mail,
-  MapPin,
-  Puzzle,
-} from "lucide-react";
-import { PortalCard } from "./components/PortalCard.jsx";
-import { SectionShell } from "./components/SectionShell.jsx";
-import { Terminal } from "./components/Terminal.jsx";
-import {
-  certifications,
-  design,
+  awards,
   education,
   experience,
-  hackathons,
-  languages,
   leadership,
-  portals,
+  links,
+  nav,
   profile,
   projects,
+  publications,
   research,
-  skills,
-  workshops,
+  training,
 } from "./data/portfolio.js";
 
-const assetUrl = (path) => `${import.meta.env.BASE_URL}${path}`;
+const asset = (path) => `${import.meta.env.BASE_URL}${path}`;
 
-function FloatingPuzzle({ className, delay = 0 }) {
+function useTheme() {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    try {
+      localStorage.setItem("theme", dark ? "dark" : "light");
+    } catch {
+      /* storage unavailable */
+    }
+  }, [dark]);
+  return [dark, setDark];
+}
+
+function Section({ id, title, children }) {
   return (
-    <motion.div
-      className={`floating-puzzle ${className}`}
-      animate={{ y: [0, -18, 0], rotate: [0, 8, 0] }}
-      transition={{ duration: 7, repeat: Infinity, delay }}
-      aria-hidden="true"
-    >
-      <Puzzle size={28} />
-    </motion.div>
+    <section id={id} className="scroll-mt-20 border-t border-line py-12 sm:py-16">
+      <h2 className="mb-6 text-sm font-semibold uppercase tracking-wider text-accent">{title}</h2>
+      {children}
+    </section>
   );
 }
 
-function Hero({ unlockedCount }) {
+function ButtonLink({ href, icon: Icon, children, primary = false, download }) {
+  const external = href.startsWith("http");
   return (
-    <header id="home" className="relative min-h-screen overflow-hidden bg-void">
-      <img
-        src={assetUrl(profile.heroImage)}
-        alt="Maha Trabelsi in a futuristic Mahaverse scene with AI, code, design, and puzzle visuals"
-        className="hero-portrait"
-      />
-      <div className="absolute inset-0 hero-field" />
-      <div className="scanline" />
-      <FloatingPuzzle className="left-[8%] top-[18%]" />
-      <FloatingPuzzle className="right-[11%] top-[24%]" delay={1.2} />
-      <FloatingPuzzle className="bottom-[13%] left-[22%]" delay={2.1} />
+    <a
+      href={href}
+      download={download}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      className={
+        "inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition-colors " +
+        (primary
+          ? "bg-accent text-white hover:bg-accent-strong"
+          : "border border-line text-fg hover:border-accent hover:text-accent")
+      }
+    >
+      <Icon size={16} aria-hidden="true" />
+      {children}
+    </a>
+  );
+}
 
-      <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
-        <a href="#home" className="font-display text-xl font-black tracking-wide text-white">
-          Mahaverse
+function TextLink({ href, children }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
+    >
+      {children}
+      <ExternalLink size={13} aria-hidden="true" />
+    </a>
+  );
+}
+
+function Header({ dark, setDark }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4 sm:px-6">
+        <a href="#top" className="font-semibold text-fg">
+          Maha Trabelsi
         </a>
-        <div className="hidden items-center gap-5 text-sm text-slate-300 md:flex">
-          {["Hub", "About", "Contact"].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="nav-link">
-              {item}
+        <nav className="hidden items-center gap-5 md:flex" aria-label="Main">
+          {nav.map((item) => (
+            <a key={item.id} href={`#${item.id}`} className="text-sm text-muted hover:text-accent">
+              {item.label}
             </a>
           ))}
+        </nav>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setDark(!dark)}
+            className="rounded-md p-2 text-muted hover:text-accent"
+            aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+          >
+            {dark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="rounded-md p-2 text-muted hover:text-accent md:hidden"
+            aria-label="Toggle menu"
+            aria-expanded={open}
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
-        <a href={assetUrl(profile.cvPath)} download className="icon-action" aria-label="Download CV">
-          <Download size={18} />
-        </a>
-      </nav>
-
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-92px)] max-w-7xl items-center gap-10 px-5 pb-16 pt-8 sm:px-8 lg:grid-cols-[0.92fr_1.08fr]">
-        <div className="hidden lg:block" aria-hidden="true" />
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="hero-copy"
-        >
-          <p className="eyebrow">Personal operating system online</p>
-          <p className="hero-status">Mahaverse OS: {unlockedCount}/4 modes discovered</p>
-          <h1 className="hero-title">Which Maha are you trying to discover?</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">{profile.intro}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#hub" className="primary-button">
-              Enter Hub <ArrowDown size={18} />
-            </a>
-            <a href={`mailto:${profile.email}`} className="secondary-button">
-              <Mail size={18} /> Contact
-            </a>
-          </div>
-        </motion.div>
       </div>
+      {open && (
+        <nav className="border-t border-line px-4 py-2 md:hidden" aria-label="Mobile">
+          {nav.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={() => setOpen(false)}
+              className="block py-2 text-sm text-fg hover:text-accent"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }
 
-function Hub({ activePortal, unlocked, onSelect }) {
-  const current = portals.find((portal) => portal.id === activePortal);
-
+function Hero() {
   return (
-    <SectionShell id="hub" eyebrow="Mahaverse Hub" title="Choose a portal. Unlock a professional side of Maha.">
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {portals.map((portal) => (
-          <PortalCard
-            key={portal.id}
-            portal={portal}
-            active={portal.id === activePortal}
-            unlocked={unlocked.includes(portal.id)}
-            onSelect={onSelect}
-          />
-        ))}
-      </div>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current.id}
-          className="mt-8 rounded-[8px] border border-white/10 bg-white/[0.06] p-6 shadow-glow backdrop-blur-xl"
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -14 }}
-        >
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-mint">Active portal</p>
-              <h3 className="mt-2 font-display text-3xl font-bold text-white">{current.title}</h3>
-              <p className="mt-3 max-w-3xl text-slate-300">{current.tagline}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {current.sections.map((section) => (
-                <span key={section} className="chip">
-                  {section}
-                </span>
-              ))}
-            </div>
-            <a href="#portal-content" className="primary-button">
-              Open Selected Portal <ArrowDown size={18} />
-            </a>
-          </div>
-        </motion.div>
-      </AnimatePresence>
-    </SectionShell>
-  );
-}
-
-function About() {
-  return (
-    <SectionShell
-      id="about"
-      eyebrow="SYSTEM BOOT: MAHA.EXE"
-      title="Welcome to the Mahaverse. Part AI lab, part scout camp, part developer console, part beautiful chaos."
-    >
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="glass-panel">
-          <p className="text-lg leading-8 text-slate-200">
-            I&apos;m Maha Trabelsi - a Data Science master&apos;s student, builder, scout leader,
-            and professional idea collector. I create AI tools, websites, mobile apps,
-            workshops, and occasionally open 47 tabs to solve one tiny bug. This portfolio is
-            not a resume; it&apos;s a puzzle version of my brain.
-          </p>
-          <a href="#hub" className="primary-button mt-6">
-            Enter the Mahaverse <ArrowDown size={18} />
-          </a>
-          <div className="mt-6 flex flex-wrap gap-3 text-sm text-slate-300">
-            <span className="inline-flex items-center gap-2">
-              <MapPin size={16} className="text-mint" /> {profile.location}
-            </span>
-            <a className="inline-flex items-center gap-2 hover:text-mint" href={`mailto:${profile.email}`}>
-              <Mail size={16} className="text-mint" /> {profile.email}
-            </a>
-          </div>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {profile.stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              className="stat-tile"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.08 }}
-            >
-              <strong>{stat.value}</strong>
-              <span>{stat.label}</span>
-            </motion.div>
-          ))}
+    <div id="top" className="flex flex-col gap-6 py-12 sm:flex-row sm:items-center sm:py-20">
+      {profile.photo && (
+        <img
+          src={asset(profile.photo)}
+          alt={profile.name}
+          className="h-28 w-28 shrink-0 rounded-full object-cover sm:h-36 sm:w-36"
+        />
+      )}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-fg sm:text-4xl">{profile.name}</h1>
+        <p className="mt-2 text-lg text-muted">{profile.title}</p>
+        <p className="mt-4 rounded-md border-l-4 border-accent bg-accent-soft px-4 py-2 text-sm text-fg">
+          {profile.current}
+        </p>
+        <div className="mt-6 flex flex-wrap gap-2">
+          <ButtonLink href={asset(profile.cvPath)} icon={Download} primary download>
+            Download CV
+          </ButtonLink>
+          <ButtonLink href={links.scholar} icon={GraduationCap}>
+            Google Scholar
+          </ButtonLink>
+          <ButtonLink href={links.github} icon={Github}>
+            GitHub
+          </ButtonLink>
+          <ButtonLink href={links.linkedin} icon={Linkedin}>
+            LinkedIn
+          </ButtonLink>
+          <ButtonLink href={`mailto:${links.email}`} icon={Mail}>
+            Email
+          </ButtonLink>
         </div>
       </div>
-    </SectionShell>
-  );
-}
-
-function Skills() {
-  return (
-    <SectionShell id="skills" eyebrow="Skills" title="The toolkit: technical stack plus human operating system.">
-      <div className="grid gap-5 md:grid-cols-2">
-        {Object.entries(skills).map(([group, items]) => (
-          <div key={group} className="glass-panel">
-            <h3 className="font-display text-xl font-bold text-white">{group}</h3>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {items.map((item) => (
-                <span key={item} className="skill-pill">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </SectionShell>
-  );
-}
-
-function Projects() {
-  const [activeFilter, setActiveFilter] = useState("All");
-  const filters = ["All", ...new Set(projects.map((project) => project.category))];
-  const visibleProjects =
-    activeFilter === "All"
-      ? projects
-      : projects.filter((project) => project.category === activeFilter);
-
-  return (
-    <SectionShell id="projects" eyebrow="Developer Maha" title="Built like experiments. Written like products. Aimed at public impact.">
-      <div className="mb-6 flex flex-wrap gap-2">
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            type="button"
-            className={`filter-button ${activeFilter === filter ? "is-active" : ""}`}
-            onClick={() => setActiveFilter(filter)}
-          >
-            {filter}
-          </button>
-        ))}
-      </div>
-      <motion.div layout className="grid gap-5 md:grid-cols-2">
-        <AnimatePresence mode="popLayout">
-          {visibleProjects.map((project) => (
-            <motion.article
-              layout
-              key={project.name}
-              className="project-card"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              whileHover={{ y: -8 }}
-            >
-              {project.image && (
-                <img
-                  src={assetUrl(project.image)}
-                  alt={`${project.name} screenshot`}
-                  className="project-image"
-                />
-              )}
-              <p className="text-sm uppercase tracking-[0.18em] text-amber">{project.type}</p>
-              <div className="mt-3 flex items-start justify-between gap-3">
-                <h3 className="font-display text-2xl font-bold text-white">{project.name}</h3>
-                {project.repo ? (
-                  <a
-                    href={project.repo}
-                    className="icon-action shrink-0"
-                    aria-label={`Open ${project.name} on GitHub`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ExternalLink size={17} />
-                  </a>
-                ) : (
-                  <span className="chip shrink-0">Private</span>
-                )}
-              </div>
-              <p className="mt-4 leading-7 text-slate-300">{project.description}</p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <span className="chip border-mint/30 text-mint">{project.category}</span>
-                {project.tags.map((tag) => (
-                  <span key={tag} className="chip">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </motion.article>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-      <p className="mt-4 font-mono text-sm text-slate-400">
-        Showing {visibleProjects.length} / {projects.length} projects
-      </p>
-    </SectionShell>
-  );
-}
-
-function Hackathons() {
-  return (
-    <SectionShell id="hackathons" eyebrow="Developer Maha" title="Hackathon Arena: fast builds, weird constraints, deadline energy.">
-      <div className="hackathon-shell">
-        <div className="hackathon-console">
-          <p className="font-mono text-sm text-mint">Projects/Hackathons/Competitions</p>
-          <h3 className="mt-3 font-display text-3xl font-bold text-white">Build fast. Explain clearly. Ship something real.</h3>
-          <p className="mt-4 leading-7 text-slate-300">
-            This is where the portfolio keeps challenge-style work: hackathons, mini-competitions,
-            prototypes built under pressure, and technical experiments with a deadline heartbeat.
-          </p>
-        </div>
-        <div className="grid gap-4">
-          {hackathons.map((event) => (
-            <motion.article key={event.name} className="hackathon-card" whileHover={{ y: -6 }}>
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-amber">{event.theme}</p>
-                  <h3>{event.name}</h3>
-                  <p className="mt-2 text-slate-300">{event.description}</p>
-                </div>
-                <div className="hackathon-badge">
-                  <span>{event.role}</span>
-                  <small>{event.status}</small>
-                </div>
-              </div>
-              <div className="mt-5 grid gap-3 md:grid-cols-3">
-                {event.highlights.map((item) => (
-                  <div key={item} className="mini-card">
-                    {item}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {event.stack.map((item) => (
-                  <span key={item} className="chip">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </motion.article>
-          ))}
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
-function Timeline({ items }) {
-  return (
-    <div className="timeline">
-      {items.map((item) => (
-        <article key={`${item.role}-${item.period}`} className="timeline-item">
-          <div className="timeline-dot" />
-          <p className="text-sm text-mint">{item.period}</p>
-          <h3 className="mt-2 font-display text-2xl font-bold text-white">{item.role}</h3>
-          <p className="mt-1 text-slate-300">
-            {item.company} - {item.location}
-          </p>
-          <ul className="mt-4 space-y-2 text-slate-300">
-            {item.details.map((detail) => (
-              <li key={detail}>{detail}</li>
-            ))}
-          </ul>
-        </article>
-      ))}
     </div>
   );
 }
 
-function Experience() {
+function TimelineItem({ title, org, period, children }) {
   return (
-    <SectionShell id="experience" eyebrow="Experience" title="Developer and design experience, from interfaces to printed visuals.">
-      <Timeline items={experience} />
-    </SectionShell>
-  );
-}
-
-function EducationResearch() {
-  const ResearchIcon = research.icon;
-
-  return (
-    <SectionShell id="education" eyebrow="Student Maha" title="Research mode: co-author, builder, learner.">
-      <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
-        <div className="space-y-4">
-          {education.map((item) => (
-            <article key={item.degree} className="glass-panel">
-              <p className="text-sm uppercase tracking-[0.18em] text-mint">{item.place}</p>
-              <h3 className="mt-2 font-display text-xl font-bold text-white">{item.degree}</h3>
-              <p className="mt-2 text-slate-300">{item.school}</p>
-              <p className="mt-2 text-slate-400">{item.focus}</p>
-            </article>
-          ))}
-        </div>
-        <div id="research" className="glass-panel">
-          <ResearchIcon className="text-neon" size={34} />
-          <h3 className="mt-4 font-display text-2xl font-bold text-white">{research.headline}</h3>
-          <p className="mt-4 leading-7 text-slate-300">{research.body}</p>
-          <div className="mt-5 rounded-[8px] border border-mint/20 bg-mint/10 p-4 leading-7 text-slate-200">
-            <strong className="text-mint">Research highlight:</strong> I have co-authored work on
-            GNN benchmarking and evaluation, and I am currently building a systematic literature
-            review on Alzheimer's disease and AI.
-          </div>
-          <div className="mt-6 space-y-3">
-            {research.interests.map((interest) => (
-              <div key={interest} className="flex gap-3 text-slate-300">
-                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-mint" />
-                <span>{interest}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+    <li className="grid gap-1 sm:grid-cols-[1fr_auto] sm:gap-4">
+      <div>
+        <h3 className="font-semibold text-fg">{title}</h3>
+        <p className="text-sm text-muted">{org}</p>
+        {children && <p className="mt-2 text-[0.95rem] leading-relaxed text-fg/90">{children}</p>}
       </div>
-    </SectionShell>
-  );
-}
-
-function Leadership() {
-  return (
-    <SectionShell id="leadership" eyebrow="Scout & Volunteer Maha" title="Scouts, clubs, Red Crescent, facilitation, and community impact.">
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="glass-panel">
-          <h3 className="font-display text-2xl font-bold text-white">Leadership Missions</h3>
-          <div className="mt-5 grid gap-3">
-            {leadership.map((item) => (
-              <article key={item.title} className="mission-card">
-                <h4>{item.title}</h4>
-                <p>{item.detail}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-        <div className="glass-panel">
-          <h3 className="font-display text-2xl font-bold text-white">Workshops & Field Work</h3>
-          <div className="mt-5 grid gap-3">
-            {workshops.map((item) => (
-              <article key={item.title} className="impact-card">
-                <strong>{item.metric}</strong>
-                <div>
-                  <h4>{item.title}</h4>
-                  <p>{item.detail}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
-function Design() {
-  return (
-    <SectionShell id="design" eyebrow="Graphic Designer Maha" title="Visual communication for clubs, print, scouts, and community projects.">
-      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="glass-panel">
-          <h3 className="font-display text-2xl font-bold text-white">{design.headline}</h3>
-          <p className="mt-4 leading-7 text-slate-300">{design.body}</p>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {design.work.map((item) => (
-            <div key={item} className="mini-card">
-              {item}
-            </div>
-          ))}
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
-function CertificationsExplorer() {
-  return (
-    <SectionShell id="certifications" eyebrow="Certifications + Global Readiness" title="Programs, language switches, and international curiosity.">
-      <div className="grid gap-5">
-        <div className="glass-panel">
-          <h3 className="font-display text-2xl font-bold text-white">Programs & Certifications</h3>
-          <div className="cert-layout mt-5">
-            {certifications.map((cert, index) => (
-              <article
-                key={cert.name}
-                className={`cert-card ${index < 2 ? "cert-card-wide" : ""}`}
-              >
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-amber">{cert.issuer}</p>
-                  <h4>{cert.name}</h4>
-                  <p>{cert.description}</p>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {cert.tags.map((tag) => (
-                    <span key={tag} className="chip">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-        <div className="glass-panel">
-          <h3 className="font-display text-2xl font-bold text-white">Languages</h3>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {languages.map((language) => (
-              <div key={language.name} className="language-row">
-                <strong>{language.name}</strong>
-                <span>{language.level}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
-function Contact() {
-  return (
-    <SectionShell id="contact" eyebrow="Contact" title="Ready to collaborate, research, build, facilitate, or open a new portal.">
-      <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="glass-panel">
-          <h3 className="font-display text-2xl font-bold text-white">{profile.name}</h3>
-          <p className="mt-3 text-slate-300">{profile.title}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href={`mailto:${profile.email}`} className="primary-button">
-              <Mail size={18} /> Email Maha
-            </a>
-            <a href={assetUrl(profile.cvPath)} download className="secondary-button">
-              <Download size={18} /> Download CV
-            </a>
-            <a href="#hub" className="secondary-button">
-              <ExternalLink size={18} /> Choose Portal
-            </a>
-          </div>
-        </div>
-        <Terminal />
-      </div>
-    </SectionShell>
-  );
-}
-
-function PortalWorkspace({ activePortal }) {
-  const portal = portals.find((item) => item.id === activePortal);
-
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        id="portal-content"
-        key={activePortal}
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -24 }}
-        transition={{ duration: 0.35 }}
-      >
-        {activePortal === "student" && (
-          <>
-            <EducationResearch />
-            <CertificationsExplorer />
-          </>
-        )}
-        {activePortal === "builder" && (
-          <>
-            <Skills />
-            <Projects />
-            <Hackathons />
-            <Experience />
-            <CertificationsExplorer />
-          </>
-        )}
-        {activePortal === "scout" && <Leadership />}
-        {activePortal === "designer" && (
-          <>
-            <Design />
-            <Skills />
-          </>
-        )}
-        <div className="portal-footer">
-          <p>
-            Current room: <strong>{portal.title}</strong>. Pick another portal above to switch
-            the portfolio view.
-          </p>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+      <p className="order-first text-sm text-muted sm:order-none sm:text-right sm:whitespace-nowrap">{period}</p>
+    </li>
   );
 }
 
 export default function App() {
-  const [activePortal, setActivePortal] = useState("student");
-  const [unlocked, setUnlocked] = useState(["student"]);
-
-  function selectPortal(id) {
-    setActivePortal(id);
-    setUnlocked((current) => (current.includes(id) ? current : [...current, id]));
-  }
-
-  const unlockedCount = useMemo(() => unlocked.length, [unlocked]);
+  const [dark, setDark] = useTheme();
 
   return (
-    <main>
-      <Hero unlockedCount={unlockedCount} />
-      <Hub activePortal={activePortal} unlocked={unlocked} onSelect={selectPortal} />
-      <About />
-      <PortalWorkspace activePortal={activePortal} />
-      <Contact />
-    </main>
+    <div className="min-h-screen bg-bg text-fg">
+      <Header dark={dark} setDark={setDark} />
+      <main className="mx-auto max-w-4xl px-4 sm:px-6">
+        <Hero />
+
+        <Section id="about" title="About">
+          <div className="space-y-4 text-[1.05rem] leading-relaxed">
+            {profile.about.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </div>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {profile.interests.map((i) => (
+              <li key={i} className="rounded-full border border-line px-3 py-1 text-sm text-muted">
+                {i}
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section id="publications" title="Publications">
+          <ol className="space-y-6">
+            {publications.map((pub) => (
+              <li key={pub.title}>
+                <h3 className="font-semibold leading-snug text-fg">{pub.title}</h3>
+                <p className="mt-1 text-sm text-muted">{pub.authors}</p>
+                <p className="text-sm font-medium text-accent">{pub.venue}</p>
+                {pub.note && <p className="mt-2 text-[0.95rem] leading-relaxed">{pub.note}</p>}
+                {pub.links.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-4">
+                    {pub.links.map((l) => (
+                      <TextLink key={l.url} href={l.url}>
+                        {l.label}
+                      </TextLink>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="research" title="Research experience">
+          <ol className="space-y-8 border-l-2 border-line pl-5">
+            {research.map((r) => (
+              <TimelineItem key={r.title} title={r.title} org={r.org} period={r.period}>
+                {r.description}
+              </TimelineItem>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="projects" title="Selected projects">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {projects.map((p) => (
+              <article
+                key={p.name}
+                className="flex flex-col overflow-hidden rounded-lg border border-line bg-card transition-shadow hover:shadow-md"
+              >
+                <img
+                  src={asset(p.image)}
+                  alt={`${p.name} screenshot`}
+                  loading="lazy"
+                  className="aspect-video w-full border-b border-line object-cover object-top"
+                />
+                <div className="flex flex-1 flex-col p-4">
+                  <h3 className="font-semibold text-fg">{p.name}</h3>
+                  <p className="mt-1 flex-1 text-sm leading-relaxed text-muted">{p.description}</p>
+                  <ul className="mt-3 flex flex-wrap gap-1.5">
+                    {p.tags.map((t) => (
+                      <li key={t} className="rounded bg-accent-soft px-2 py-0.5 text-xs text-accent">
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-3">
+                    <TextLink href={p.repo}>View on GitHub</TextLink>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <p className="mt-6">
+            <TextLink href={`${links.github}?tab=repositories`}>More projects on GitHub</TextLink>
+          </p>
+        </Section>
+
+        <Section id="experience" title="Experience">
+          <ol className="space-y-6">
+            {experience.map((e) => (
+              <TimelineItem key={e.role} title={e.role} org={e.org} period={e.period}>
+                {e.description}
+              </TimelineItem>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="cv" title="Education & CV">
+          <ol className="space-y-6">
+            {education.map((e) => (
+              <TimelineItem key={e.degree} title={e.degree} org={e.org} period={e.period}>
+                {e.detail}
+              </TimelineItem>
+            ))}
+          </ol>
+
+          <div className="mt-10 grid gap-10 sm:grid-cols-2">
+            <div>
+              <h3 className="mb-3 font-semibold text-fg">Awards</h3>
+              <ul className="space-y-2 text-sm">
+                {awards.map((a) => (
+                  <li key={a.title} className="flex justify-between gap-4">
+                    <span>{a.title}</span>
+                    {a.year && <span className="shrink-0 text-muted">{a.year}</span>}
+                  </li>
+                ))}
+              </ul>
+              <h3 className="mb-3 mt-8 font-semibold text-fg">Training</h3>
+              <ul className="space-y-2 text-sm">
+                {training.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="mb-3 font-semibold text-fg">Leadership & community</h3>
+              <ul className="list-disc space-y-2 pl-4 text-sm marker:text-muted">
+                {leadership.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10">
+            <ButtonLink href={asset(profile.cvPath)} icon={Download} primary download>
+              Download full CV (PDF)
+            </ButtonLink>
+          </div>
+        </Section>
+
+        <Section id="contact" title="Contact">
+          <p className="mb-5 max-w-2xl leading-relaxed">
+            I am looking for a funded PhD position starting in Fall 2027. The best way to reach me is by email.
+          </p>
+          <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[auto_1fr]">
+            <dt className="text-muted">Email</dt>
+            <dd>
+              <a href={`mailto:${links.email}`} className="font-medium text-accent hover:underline">
+                {links.email}
+              </a>
+            </dd>
+            <dt className="text-muted">LinkedIn</dt>
+            <dd>
+              <TextLink href={links.linkedin}>maha-trabelssi</TextLink>
+            </dd>
+            <dt className="text-muted">GitHub</dt>
+            <dd>
+              <TextLink href={links.github}>mahatrabelsi1</TextLink>
+            </dd>
+            <dt className="text-muted">Google Scholar</dt>
+            <dd>
+              <TextLink href={links.scholar}>Profile</TextLink>
+            </dd>
+            <dt className="text-muted">ORCID</dt>
+            <dd>
+              <TextLink href={links.orcid}>{links.orcidId}</TextLink>
+            </dd>
+          </dl>
+        </Section>
+      </main>
+      <footer className="border-t border-line py-8 text-center text-sm text-muted">
+        © {new Date().getFullYear()} {profile.name} · {profile.location}
+      </footer>
+    </div>
   );
 }
-
-
-
