@@ -2,44 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: 255 255 255;
-  --card: 255 255 255;
-  --fg: 17 24 39;
-  --muted: 75 85 99;
-  --line: 229 231 235;
-  --accent: 30 64 175;
-  --accent-strong: 30 58 138;
-  --accent-soft: 239 243 255;
-  color-scheme: light;
-}
-
-.dark {
-  --bg: 15 18 25;
-  --card: 22 26 35;
-  --fg: 229 231 235;
-  --muted: 156 163 175;
-  --line: 45 51 64;
-  --accent: 129 160 250;
-  --accent-strong: 165 188 252;
-  --accent-soft: 30 38 64;
-  color-scheme: dark;
-}
-
 html {
   scroll-behavior: smooth;
+  background: #0a0c12;
 }
 
 body {
-  @apply bg-bg font-sans text-fg antialiased;
+  @apply bg-ink font-sans text-white antialiased;
+  overflow-x: hidden;
 }
 
-.dark .bg-accent {
-  color: rgb(15 18 25);
+/* Glossy hero card: periwinkle gradient + plastic-wrap sheen */
+.glossy {
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(120% 150% at 100% 55%, #4f5dff 0%, #8e9bff 30%, #dfe3ff 62%, #f6f7fc 100%);
+}
+.glossy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(160deg, transparent 20%, rgba(255, 255, 255, 0.55) 24%, transparent 30%),
+    linear-gradient(35deg, transparent 52%, rgba(255, 255, 255, 0.35) 55%, transparent 60%),
+    linear-gradient(100deg, transparent 70%, rgba(255, 255, 255, 0.3) 73%, transparent 78%),
+    linear-gradient(200deg, transparent 40%, rgba(255, 255, 255, 0.25) 43%, transparent 47%);
+  mix-blend-mode: soft-light;
+}
+
+/* Light card used for the most important content */
+.card-light {
+  @apply rounded-3xl bg-[#f4f5fb] text-ink;
+  background-image: linear-gradient(135deg, #ffffff 0%, #eef0ff 100%);
+}
+
+/* Dark glass card */
+.card-glass {
+  @apply rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur;
+}
+
+.outline-num {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.28);
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-float,
+  .animate-float-slow,
+  .animate-spin-slow {
+    animation: none !important;
   }
 }
